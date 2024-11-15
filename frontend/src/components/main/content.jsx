@@ -1,4 +1,4 @@
-import logoimage from "../images/logo.jpg";
+
 import AOS from "aos";
 import "aos/dist/aos.css";
 import React, { useEffect, useState } from "react";

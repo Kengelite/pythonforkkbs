@@ -1,0 +1,18 @@
+.footer {
+  background-color: #343a40; /* หรือสีที่คุณต้องการ */
+  color: #ffffff;
+  padding: 0 0;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}
+
+.footer-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* กำหนดความสูงให้เต็มหน้าจอ */
+}
+
+.footer-content {
+  flex: 1; /* ใช้ flex 1 กับคอนเทนต์หลัก */
+}

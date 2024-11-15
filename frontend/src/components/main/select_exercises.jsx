@@ -1,4 +1,4 @@
-import logoimage from "../images/logo.jpg";
+
 import AOS from "aos";
 import "aos/dist/aos.css";
 import React, { useEffect, useState } from "react";
@@ -33,12 +33,10 @@ export function Page_select_exercises() {
           <tr>
             <th scope="col">ลำดับ</th>
             <th scope="col">ชื่อ</th>
-            <th scope="col" className="ps-3">คะแนน</th>
-            <th scope="col" className="ps-3">
-              สถานะ
-            </th>
+            <th scope="col" className="ps-5">คะแนน</th>
+
             {/* <th scope="col"></th> */}
-            <th scope="col"></th>
+            <th scope="col" className="ps-5"></th>
           </tr>
         </thead>
         <tbody>
@@ -57,7 +55,7 @@ export function Page_select_exercises() {
                   >
                     {todo.question}
                   </td>
-                  <td className="ps-3">
+                  <td className="ps-5">
                     {todo.score != 0 ? (
                       <div
                         className="progress"
@@ -90,19 +88,13 @@ export function Page_select_exercises() {
                       </div>
                     )}
                   </td>
-                  <td className="ps-5">
-                    {todo.status_now === true ? (
-                      <i className="bi bi-check-circle-fill bi-check-success"></i>
-                    ) : (
-                      <i className="bi bi-x-circle-fill bi-check-block"></i>
-                    )}
-                  </td>
+                
                   {/* <td>
                     <Link to={`/Exercises/${todo.id_chapter}`}>
                       <button className="btn btn-warning">ทำแบบฝึกหัด</button>
                     </Link>
                   </td> */}
-                  <td>
+                  <td className="ps-5">
                     <Link to={`/send-exercises/${todo.user_exe_id}`} className="ps-5">
                       <button className="btn btn-primary">ทำแบบฝึกหัด</button>
                     </Link>

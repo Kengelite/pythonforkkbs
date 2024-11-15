@@ -2,12 +2,14 @@ import { React, useState, useEffect, useRef } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Swal from "sweetalert2";
+import "../css/send-exe.css"
 import Monaco from "@monaco-editor/react";
 import { useParams } from "react-router-dom";
-import { runCodeAPI, handleSendInput } from "../callapi/callruncode";
+// import { runCodeAPI, handleSendInput } from "../callapi/callruncode";
 import {
   fetchdata_chapter_execrises_work,
   sendScoreAPI,
+  runCodeAPI
 } from "../callapi/callruncode";
 export function Send_ExercisesPage() {
   const { id } = useParams();
@@ -145,8 +147,10 @@ export function Send_ExercisesPage() {
   console.log(scoreData);
   return (
     <div className="container my-exercise-page mt-5 ">
-      <h2 className="exercise-title">โจทย์</h2>
-      <p style={{ fontSize: "1.25rem" }}>{question}</p>
+      <div className="exercise-container">
+        <h1 className="exercise-title">โจทย์</h1>
+        <p className="exercise-content">{question}</p>
+      </div>
       <div className="row mt-5">
         <div className="col-lg-7 code-editor-section mb-5 me-5">
           <div className="d-flex justify-content-between align-items-center mb-3">
@@ -177,7 +181,7 @@ export function Send_ExercisesPage() {
         <div className="col-lg-4 output-section ">
           <h2 className="">ผลลัพธ์ที่ต้องการ </h2>
 
-          <table className="table mt-4 table-bordered ">
+          <table className="table mt-4 table-bordered outer-rounded-table">
             <thead>
               <tr>
                 <th scope="col">ข้อ</th>
@@ -249,7 +253,7 @@ export function Send_ExercisesPage() {
             <>
               {/* <h3 className="mt-3">คะแนน</h3> */}
               <div className="d-flex justify-content-between align-items-center w-100">
-                <div className="fs-4">คะแนนที่ได้ : {averageScore}</div>
+                <div className="fs-4"> <b>คะแนนที่ได้ : {averageScore}</b></div>
                 <button
                   type="button"
                   className="btn btn-primary btn-sm"
@@ -265,7 +269,7 @@ export function Send_ExercisesPage() {
           {scoreData.length != 0 ? (
             <div style={{ overflowX: "auto", maxWidth: "100%" }}>
               <table
-                className="table mt-4 table-bordered"
+                className="table mt-4 table-bordered outer-rounded-table"
                 style={{ width: "100%" }}
               >
                 <thead>

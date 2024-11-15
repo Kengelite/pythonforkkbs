@@ -1,16 +1,17 @@
-import logoimage from "../images/logo.jpg";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import React, { useEffect, useState } from "react";
 import "../css/content.css";
 import { Link } from "react-router-dom";
 import { fetchdata_chapter } from "../callapi/callruncode";
+import { setCookie, getCookie } from "../callapi/callcookie";
 
 export function Contentmain_chapter() {
   const [chapterData, setChapterData] = useState([]); // สร้าง state เพื่อเก็บข้อมูลที่ดึงมา
 
   useEffect(() => {
-    // สร้างฟังก์ชัน async ภายใน useEffect
+    const userSession = getCookie("userSession");
+    console.log("userSession:", userSession);
     const fetchChapterData = async () => {
       try {
         const res_data = await fetchdata_chapter(); // รอผลลัพธ์จาก API
@@ -22,7 +23,31 @@ export function Contentmain_chapter() {
     };
 
     fetchChapterData(); // เรียกใช้ฟังก์ชัน
-  }, []); // ใส่ dependency array เป็น [] เพื่อให้ทำงานแค่ครั้งเดียวเมื่อ component ถูก mount
+  }, []);
+
+  const calculateRemainingDays = (startDate, endDate) => {
+    const today = new Date();
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+
+    if (start && today < start) {
+      return "ยังไม่เปิด"; // ยังไม่เริ่ม
+    }
+    if (end && today > end) {
+      return "สิ้นสุดเวลาทำแลป"; // หมดเวลาทำแบบฝึกหัดแล้ว
+    }
+
+    const diffTime = end ? end - today : 0;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // คำนวณต่างวันเป็นจำนวนเต็ม
+    return diffDays > 0 ? `${diffDays} วัน` : "วันนี้เป็นวันสุดท้าย"; // กรณีที่เหลือเวลา 0 วัน
+  };
+
+  const isExerciseAvailable = (startDate, endDate) => {
+    const today = new Date();
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    return start && today >= start && (!end || today <= end); // ตรวจสอบว่าปัจจุบันอยู่ในช่วงเวลา
+  };
 
   return (
     <>
@@ -32,53 +57,58 @@ export function Contentmain_chapter() {
           <tr>
             <th scope="col">ลำดับ</th>
             <th scope="col">ชื่อ</th>
-            <th scope="col" className="ps-5">คะแนน</th>
-            <th scope="col" className="ps-3">สถานะ</th>
-            <th scope="col"></th>
-            {/* <th scope="col"></th> */}
+            <th scope="col" className="pe-5">
+              คะแนน
+            </th>
+            <th scope="col">คงเหลือ</th>
+            <th scope="col" className="ps-5"></th>
           </tr>
         </thead>
         <tbody>
           {chapterData.length > 0 ? (
             chapterData.map((todo, index) => {
+              const remainingDays = calculateRemainingDays(
+                todo.assigned_start,
+                todo.assigned_end
+              ); // คำนวณวันคงเหลือ
+              const isAvailable = isExerciseAvailable(
+                todo.assigned_start,
+                todo.assigned_end
+              ); // ตรวจสอบว่าปุ่มควรแสดงหรือไม่
+
               return (
                 <tr key={index}>
                   <th scope="row">{index + 1}</th>
                   <td>{todo.name}</td>
-                  <td>
-                    <div
-                      className="progress"
-                      role="progressbar"
-                      aria-label="Animated striped example"
-                      aria-valuenow={todo.avg_score}
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                    >
+                  <td className="pe-5">
+                    {remainingDays !== "ยังไม่เปิด" ? (
                       <div
-                        className="progress-bar progress-bar-striped progress-bar-animated"
-                        style={{ width: `${todo.avg_score}%` }}
+                        className="progress"
+                        role="progressbar"
+                        aria-label="Animated striped example"
+                        aria-valuenow={todo.avg_score}
+                        aria-valuemin="0"
+                        aria-valuemax="100"
                       >
-                        {todo.avg_score} %
+                        <div
+                          className="progress-bar progress-bar-striped progress-bar-animated"
+                          style={{ width: `${todo.avg_score}%` }}
+                        >
+                          {todo.avg_score} %
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="ps-5">
-                    {todo.status_now === true ? (
-                      <i className="bi bi-check-circle-fill bi-check-success"></i>
                     ) : (
-                      <i className="bi bi-x-circle-fill bi-check-block"></i>
+                      <span>-</span> // หรือข้อความอื่นๆ เช่น "ยังไม่เปิด"
                     )}
                   </td>
-                  <td>
-                    <Link to={`/Chapter/exercises/${todo.chapter_id}`}>
-                      <button className="btn btn-warning">ทำแบบฝึกหัด</button>
-                    </Link>
+                  <td>{remainingDays}</td>
+                  <td className="ps-5">
+                    {isAvailable && (
+                      <Link to={`/Chapter/exercises/${todo.chapter_id}`}>
+                        <button className="btn btn-warning">ทำแบบฝึกหัด</button>
+                      </Link>
+                    )}
                   </td>
-                  {/* <td>
-                    <Link to={`/send-exercises/${todo.id_chapter}`} className="ps-5">
-                      <button className="btn btn-warning">ทำแบบฝึกหัด</button>
-                    </Link>
-                  </td> */}
                 </tr>
               );
             })

@@ -33,9 +33,11 @@ let inputQueue = []; // Queue สำหรับเก็บ input ของผ�
 let waitingForInput = false;
 let currentCode = ""; // เก็บโค้ด Python ที่ต้องการรัน
 let lastPrompt = "";
+
 app.post("/run-python", (req, res) => {
   inputQueue = []; // เริ่มต้น queue สำหรับเก็บข้อมูล input ของผู้ใช้
   currentCode = req.body.code; // เก็บโค้ด Python ที่รับมาจากไคลเอนต์
+  console.log(currentCode)
 
   // ตัวแปรสำหรับเก็บ input prompt และเลขบรรทัดของ input() ที่เจอ
   const inputPrompts = [];
@@ -219,8 +221,8 @@ app.post("/run-python-test", async (req, res) => {
     );
 
     const allResults = []; // Array สำหรับเก็บผลลัพธ์ทั้งหมด
-    console.log(code)
-  
+    console.log(code);
+
     for (const val of results) {
       // ตรวจสอบว่าคำตอบในฐานข้อมูลต้องการ input แต่โค้ดของผู้ใช้ไม่มีการใช้ input()
       if (val.ans_input && !code.includes("input(")) {
@@ -261,7 +263,10 @@ ${code}
             const stdoutTrimmed = stdout.trim().toLowerCase();
 
             const distance = levenshtein.get(ansOutputTrimmed, stdoutTrimmed);
-            const maxLen = Math.max(ansOutputTrimmed.length, stdoutTrimmed.length);
+            const maxLen = Math.max(
+              ansOutputTrimmed.length,
+              stdoutTrimmed.length
+            );
             const similarity = ((maxLen - distance) / maxLen) * 100;
             const score = Math.round(similarity);
 
@@ -290,6 +295,7 @@ app.get("/send-data-chapter", async (req, res) => {
     ROUND(avg_data.avg_score, 2) AS avg_score,
     chapter.chapter_id,
     chapter.name,
+        chapter.assigned_start,
     chapter.assigned_end
 FROM 
     user
@@ -316,7 +322,7 @@ LEFT JOIN (
 WHERE 
     user.user_id = ?
     AND chapter.delete_up IS NULL;`,
-      [id,id]
+      [id, id]
     );
 
     res.json({ data: rows });
@@ -345,7 +351,7 @@ LEFT join chapter on exercise.id_chapter = chapter.chapter_id
 where chapter.chapter_id = ?  and user_exercise.id_user = ?`,
       [id_chapter, id_user]
     );
-    console.log(rows)
+    console.log(rows);
     res.json({ data: rows });
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -384,9 +390,6 @@ where user_exercise.user_exe_id = ?
   }
 });
 
-
-
-
 app.post("/send-send-score", async (req, res) => {
   let connection;
   try {
@@ -396,7 +399,8 @@ app.post("/send-send-score", async (req, res) => {
     const iduserExe = req.body.id; // ดึง iduserExe จาก body ของ request
     const Score = req.body.averageScore; // ดึง Score จาก body ของ request
 
-    if (!code || !iduserExe || Score == null) { // ตรวจสอบว่าทุกค่ามีค่าหรือไม่
+    if (!code || !iduserExe || Score == null) {
+      // ตรวจสอบว่าทุกค่ามีค่าหรือไม่
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -416,12 +420,71 @@ app.post("/send-send-score", async (req, res) => {
   }
 });
 
+app.get("/send-data-lesson", async (req, res) => {
+  let connection;
+  try {
+    connection = await initializeDB(); // เรียกการเชื่อมต่อฐานข้อมูล
+    const id_chapter = req.query.id_chapter;
+
+    const [rows] = await connection.execute(
+      `
+      SELECT * FROM lesson WHERE id_chapter = ?`,
+      [id_chapter]
+    );
+    console.log(rows);
+    res.json({ data: rows });
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    res.status(500).json({ error: "Internal server error" });
+  } finally {
+    if (connection) {
+      await connection.end(); // ปิดการเชื่อมต่อ
+    }
+  }
+});
+
+
+app.post("/run-python-simple", async (req, res) => {
+  const { code, input } = req.body; // รับ `code` และ `input` จาก client
+  const filePath = path.join(__dirname, "temp.py");
+
+  try {
+    // สร้างโค้ด Python ที่รวม input
+    const updatedCode = `
+input_values = ${JSON.stringify(input || [])}
+def input(prompt=''):
+    return input_values.pop(0) if input_values else ''
+${code}
+    `;
+
+    // เขียนโค้ดลงไฟล์ชั่วคราว
+    await fs.promises.writeFile(filePath, updatedCode);
+
+    // สร้าง Promise เพื่อรันคำสั่ง Python
+    const execPromise = new Promise((resolve) => {
+      exec(`python3 ${filePath}`, (error, stdout, stderr) => {
+        // ลบไฟล์ชั่วคราวหลังจากรันเสร็จ
+        fs.unlink(filePath, () => {});
+
+        if (error) {
+          resolve({ output: "", error: stderr }); // ส่ง error กลับ
+        } else {
+          resolve({ output: stdout.trim(), error: "" }); // ส่ง output กลับ
+        }
+      });
+    });
+
+    // รอผลลัพธ์จากการรันโค้ด Python และส่งกลับไปยัง client
+    const result = await execPromise;
+    res.json(result);
+
+  } catch (err) {
+    console.error("Error writing or executing the file:", err);
+    res.json({ output: "", error: "Error writing or executing the file" });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
-
-
-
-

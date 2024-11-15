@@ -1,0 +1,56 @@
+.exercise-container {
+    border: 1px solid #ddd;
+    /* กำหนดกรอบ */
+    padding: 20px;
+    border-radius: 5px;
+    /* มุมมน */
+    margin-top: 20px;
+    position: relative;
+}
+
+.exercise-title {
+    font-size: 1.5rem;
+    position: absolute;
+    top: -10px;
+    /* ดันตำแหน่งขึ้น */
+    left: 15px;
+    background-color: white;
+    padding: 0 10px;
+    color: #333;
+}
+
+.exercise-content {
+    font-size: 1rem;
+    margin-top: 20px;
+    /* เพิ่มระยะห่างจากหัวข้อ */
+}
+
+
+.outer-rounded-table {
+    border-collapse: separate;
+    border-spacing: 0; /* ทำให้เส้นกรอบแนบกัน */
+    border: 1px solid #ddd; /* เส้นกรอบของตาราง */
+    border-radius: 10px; /* ทำขอบมุมของตาราง */
+    overflow: hidden; /* เพื่อให้ขอบมุมแสดงผลได้ถูกต้อง */
+  }
+  
+  .outer-rounded-table th,
+  .outer-rounded-table td {
+    border: 1px solid #ddd; /* เส้นกรอบภายใน */
+  }
+  
+  .outer-rounded-table thead th:first-child {
+    border-top-left-radius: 10px; /* มุมซ้ายบน */
+  }
+  
+  .outer-rounded-table thead th:last-child {
+    border-top-right-radius: 10px; /* มุมขวาบน */
+  }
+  
+  .outer-rounded-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 10px; /* มุมซ้ายล่าง */
+  }
+  
+  .outer-rounded-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 10px; /* มุมขวาล่าง */
+  }

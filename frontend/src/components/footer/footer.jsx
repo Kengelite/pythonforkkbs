@@ -1,22 +1,29 @@
+
 function Footerdiv() {
   return (
     <>
-      <div className="bg-dark  text-light mt-5">
+      <div className="footer bg-dark text-light">
         <div className="container">
           <div className="row pt-3">
-            <div className="col-lg-4 mt-3  mb-5 ms-10">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eum
-              dignissimos reprehenderit delectus fugiat aperiam eius quibusdam
-              voluptatibus eos reiciendis ea suscipit nulla, fugit accusantium
-              adipisci, consequuntur cumque aliquid nihil maxime!
+            <div className="col-lg-12 mt-3 mb-4 text-center">
+              <img
+                src="https://computing.kku.ac.th/_nuxt/img/logo2.06d1225.png"
+                width="100"
+                alt="KKU Logo"
+                className="img-fluid"
+              />
+              <span className="ms-5 text-white">
+                © Copyright by{" "}
+                <a
+                  href="https://www.facebook.com/keng.kak.313"
+                  style={{ color: "white", textDecoration: "none" }}
+                  onMouseOver={(e) => (e.target.style.color = "#0d6efd")}
+                  onMouseOut={(e) => (e.target.style.color = "white")}
+                >
+                  Apipath Kamput
+                </a>
+              </span>
             </div>
-            <div className="col-lg-4 mt-3  mb-5">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Adipisci
-              quisquam qui quis velit consequatur at, nemo earum dolore
-              voluptatem molestiae atque laboriosam deleniti. Ipsum quo,
-              provident neque nam minus dolorum?
-            </div>
-           
           </div>
         </div>
       </div>

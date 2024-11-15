@@ -1,15 +1,23 @@
-import logoimage from "../images/logo.jpg";
-import { Link } from "react-router-dom";
+import React from "react";
+import logoimage from "../images/logo.png";
+import { Link, useLocation } from "react-router-dom";
+import "../css/nav.css";
+
 function Navbar() {
+  const location = useLocation();
+
   return (
     <>
-      <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">
-            <img src={logoimage} alt="" width="60rem" />
-          </a>
+      <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <div className="container"> {/* ใช้ container ปกติ */}
+          <div className="d-flex align-items-center">
+            <a className="navbar-brand d-flex align-items-center" href="/">
+              <img src={logoimage} alt="Logo" style={{ width: "150px" }} />{" "}
+            </a>
+            <h3 className="ms-2">CP020001 Python</h3>
+          </div>
           <button
-            class="navbar-toggler"
+            className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent"
@@ -17,37 +25,39 @@ function Navbar() {
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            <span class="navbar-toggler-icon"></span>
+            <span className="navbar-toggler-icon"></span>
           </button>
-
-          <div class="collapse  navbar-collapse" id="navbarSupportedContent">
-            <form class="d-flex ms-auto" role="search">
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-              <button class="btn btn-outline-success" type="submit">
-                ค้นหา
-              </button>
-            </form>
-
-            <ul class="navbar-nav  mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav ms-2 mb-2 mb-lg-0">
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${
+                    location.pathname.startsWith("/Lesson") ? "active" : ""
+                  }`}
+                  to="/Lesson"
+                >
                   บทเรียน
-                </a>
+                </Link>
               </li>
-              <li class="nav-item">
-              
-                  <a class="nav-link" href="/scoreall">สรุปคะแนนรายบท</a>
-      
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${
+                    location.pathname.startsWith("/Chapter") ? "active" : ""
+                  }`}
+                  to="/Chapter"
+                >
+                  แบบฝึกหัด
+                </Link>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  คะแนนทั้งหมด
-                </a>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${
+                    location.pathname.startsWith("/profile") ? "active" : ""
+                  }`}
+                  to="/profile"
+                >
+                  โปรไฟล์
+                </Link>
               </li>
             </ul>
           </div>

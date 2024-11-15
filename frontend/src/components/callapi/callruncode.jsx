@@ -23,6 +23,27 @@ export function runCodeAPI(code, id_exe, id,callback) {
     });
 }
 
+export function runCode_simpleAPI(code, input) {
+  const apiUrl = `${api}/run-python-simple`;
+
+  return fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ code, input }), // ส่ง `code` และ `input` ใน body
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Data received from API:", data); // Log ข้อมูลที่ได้รับจาก API
+      return data; // คืนค่าผลลัพธ์ให้กับผู้เรียก
+    })
+    .catch((err) => {
+      console.error("Error running code:", err);
+      return { output: "", error: "Error calling API" }; // คืนค่าข้อผิดพลาด
+    });
+}
+
 export function sendScoreAPI(code, id, averageScore, callback) {
   const apiUrl = `${api}/send-send-score`;
   console.log("sdasdsad", code, id, averageScore); // ตรวจสอบค่าที่ส่ง
@@ -103,6 +124,23 @@ export async function fetchdata_chapter_execrises_work(selete_id_exe) {
     });
     // console.log(response_data)
     console.log(selete_id_exe)
+    return response_data.data; // คืนค่าข้อมูลจาก API
+  } catch (error) {
+    console.log("error : ", error); // จัดการข้อผิดพลาด
+  }
+
+}
+
+
+export async function fetchdata_chapter_lesson(id_chapter) {
+  try {
+    if (!id_chapter) {
+      console.log("id_chapter is undefined, setting it to null.");
+      id_chapter = null;
+    }
+    const response_data = await axios.get(`${api}/send-data-lesson`, {
+      params: { id_chapter: id_chapter }  // ส่ง `id_chapter` เป็น query parameter
+    });
     return response_data.data; // คืนค่าข้อมูลจาก API
   } catch (error) {
     console.log("error : ", error); // จัดการข้อผิดพลาด
